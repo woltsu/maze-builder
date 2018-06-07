@@ -9,7 +9,7 @@ const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.inner
 const renderer = new THREE.WebGLRenderer()
 renderer.setSize( window.innerWidth, window.innerHeight )
 document.body.appendChild( renderer.domElement )
-camera.position.set( 85, 75, 100 )
+camera.position.set( 85, 73, 100 )
 
 let fps, now, then, elapsed
 fps = 60
