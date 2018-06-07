@@ -1,1 +1,1 @@
-web: http-server dist
+web: npm run build |npm run start
