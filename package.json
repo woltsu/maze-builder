@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "http-server dist",
-    "watch": "open -a 'Google Chrome' 'http://localhost:8080/bundle' |node_modules/webpack-dev-server/bin/webpack-dev-server.js",
+    "watch": "open -a 'Google Chrome' 'http://localhost:8080/index' |node_modules/webpack-dev-server/bin/webpack-dev-server.js",
     "build": "rm -rf dist |mkdir dist |cp -R src/css dist |cp src/index.html dist |node_modules/webpack/bin/webpack.js"
   },
   "author": "",

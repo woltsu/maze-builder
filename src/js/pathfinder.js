@@ -11,7 +11,6 @@ const heuristicCostEstimate = (tile1, tile2) => {
 const initialize = (newTiles, newSideLength, newScene) => {
   scene = newScene
   tiles = newTiles
-  console.log('tiles', tiles);
   sideLength = newSideLength
   coloredTiles = []
   
@@ -33,25 +32,22 @@ const initialize = (newTiles, newSideLength, newScene) => {
   gScore[startingTile.id] = 0
   fScore[startingTile.id] = heuristicCostEstimate(startingTile, endingTile)
 
-  console.log('g', gScore)
-  console.log('f', fScore)
-
-
   colorTile(scene, startingTile, 0x00ff00)
   colorTile(scene, endingTile, 0xff0000)
 }
 
-const colorTile = (scene, tile, color) => {
+const colorTile = (scene, tile, color, customSize) => {
   if (!tile) {
     return
   }
   if (tile.coloredTile) {
-    return
+    scene.remove(tile.coloredTile)
   }
   
   const { x, y } = tile
-  var geometry = new THREE.BoxGeometry( sideLength - 2, sideLength - 2, 0 )
-  geometry.translate(x + (Math.floor(sideLength / 2) * 10) / 10, y + (Math.floor(sideLength / 2) * 10) / 10, -1)
+  const size = customSize ? customSize : sideLength - 2
+  var geometry = new THREE.BoxGeometry(size, size, 0 )
+  geometry.translate(x + Math.floor(sideLength / 2), y + Math.floor(sideLength / 2), -1)
   var material2 = new THREE.MeshBasicMaterial( { color } )
   var coloredTile = new THREE.Mesh( geometry, material2 )
   tile.coloredTile = coloredTile
@@ -135,22 +131,38 @@ const getNeighbors = (tile) => {
   return neighbors
 }
 
-const reconstructPath = (current) => {
-  const totalPath = current;
+let totalPath;
+const reconstructPath = (currentId) => {
+  totalPath = []
+  totalPath.push(getTileById(currentId))
+  let current = currentId
+  while (Object.keys(cameFrom).find((tileId) => tileId === current)) {
+    current = cameFrom[current]
+    totalPath.push(getTileById(current))
+  }
+}
+
+const colorFinalPath = () => {
+  totalPath.forEach((tile) => {
+    if (tile.id === startingTile.id || tile.id === endingTile.id) {
+      return
+    }
+    colorTile(scene, tile, 0x00ff00, sideLength / 5)
+  })
 }
 
 const findPath = () => {
   if (openSet.length > 0) {
     const currentTileId = getTileWithLowestFScore()
     if (currentTileId === endingTile.id) {
-      console.log('finito!')
+      reconstructPath(currentTileId)
       finished = true
     }
     const currentTile = getTileById(currentTileId)
-    colorTile(scene, currentTile, 0xffffff)
+    if (currentTile !== startingTile && currentTile !== endingTile) {
+      colorTile(scene, currentTile, 0xffffff, sideLength / 5)
+    }
     currentTile.visited = true
-    console.log('current', currentTile)
-
     openSet = openSet.filter((tile) => tile.id !== currentTileId)
 
     closedSet.push(currentTileId)
@@ -161,7 +173,6 @@ const findPath = () => {
         return
       }
       if (closedSet.includes(neighbor)) {
-        console.log('dounf')
         return
       }
 
@@ -170,10 +181,7 @@ const findPath = () => {
       }
 
       const tentativeScore = gScore[currentTileId] + 1
-      console.log('scor1', tentativeScore)
-      console.log('score', gScore[neighbor.id])
       if (tentativeScore > gScore[neighbor.id]) {
-        console.log('whaat')
         return
       }
 
@@ -185,8 +193,17 @@ const findPath = () => {
 
 }
 
+const removeWhitePath = () => {
+  tiles.forEach((tile) => {
+    if (tile.id === startingTile.id || tile.id === endingTile.id) {
+      return
+    }
+    scene.remove(tile.coloredTile)
+  })
+}
+
 const isFinished = () => finished
 
 const getColoredTiles = () => coloredTiles
 
-export default { initialize, findPath, isFinished, getColoredTiles }
+export default { initialize, findPath, isFinished, getColoredTiles, colorFinalPath, removeWhitePath }
