@@ -1,0 +1,21 @@
+{
+  "name": "maze-algorithm",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "open -a 'Google Chrome' 'http://localhost:8080/bundle' |node_modules/webpack-dev-server/bin/webpack-dev-server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "shortid": "^2.2.8",
+    "three": "^0.93.0"
+  },
+  "devDependencies": {
+    "webpack": "^4.11.0",
+    "webpack-cli": "^3.0.2",
+    "webpack-dev-server": "^3.1.4"
+  }
+}
